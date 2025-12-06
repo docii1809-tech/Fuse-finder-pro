@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Fuse Finder Pro",
+  "description": "The ultimate automotive utility suite. Find fuses, identify dashboard lights, analyze tire wear, and generate maintenance schedules using AI.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
