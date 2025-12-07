@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { YEARS, MAKES, POPULAR_MODELS } from '../constants';
 import { Vehicle } from '../types';
-import { Check, Trash2, Loader2, Search, AlertCircle } from 'lucide-react';
+import { Check, Trash2, Loader2, Search, AlertCircle, CheckCircle } from 'lucide-react';
 
 interface Props {
   vehicle: Vehicle;
@@ -101,10 +101,23 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
   const isComplete = Boolean(vehicle.year && vehicle.make && vehicle.model);
 
   return (
-    <div className={`bg-white p-6 rounded-xl shadow-md border border-slate-200 transition-all ${className}`}>
-      <div className="flex justify-between items-center mb-6">
+    <div className={`bg-white p-6 rounded-xl transition-all duration-500 relative overflow-hidden ${
+      isComplete 
+        ? 'ring-4 ring-green-400/20 shadow-xl' 
+        : 'shadow-md border border-slate-200'
+    } ${className}`}>
+      
+      {isComplete && <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>}
+
+      <div className="flex justify-between items-center mb-6 pl-2">
         <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
           <span>Select Your Vehicle</span>
+          {isComplete && (
+             <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs animate-fade-in border border-green-200">
+               <CheckCircle className="h-3 w-3" />
+               <span className="font-bold">Active</span>
+             </div>
+          )}
         </h2>
         {isComplete && (
           <button 
@@ -117,7 +130,7 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
       </div>
 
       {/* VIN Input Section */}
-      <div className="mb-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+      <div className={`mb-6 bg-slate-50 p-4 rounded-lg border transition-colors ${isComplete ? 'border-green-100 bg-green-50/30' : 'border-slate-200'}`}>
         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex justify-between">
             <span>Quick Fill by VIN</span>
             <span className="text-[10px] text-slate-400 font-normal">US/North America</span>
@@ -172,7 +185,7 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
               value={vehicle.year}
               onChange={(e) => handleChange('year', e.target.value)}
               placeholder="e.g. 2020"
-              className="w-full border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border bg-white text-slate-900"
+              className={`w-full rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border ${vehicle.year ? 'border-green-400 bg-green-50/10' : 'border-slate-300 bg-white'}`}
               autoComplete="off"
             />
             <datalist id="years-list">
@@ -192,7 +205,7 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
               value={vehicle.make}
               onChange={(e) => handleChange('make', e.target.value)}
               placeholder="e.g. Toyota"
-              className="w-full border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border bg-white"
+              className={`w-full rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border ${vehicle.make ? 'border-green-400 bg-green-50/10' : 'border-slate-300 bg-white'}`}
               autoComplete="off"
             />
             <datalist id="makes-list">
@@ -213,7 +226,7 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
               onChange={(e) => handleChange('model', e.target.value)}
               disabled={!vehicle.make}
               placeholder={vehicle.make ? `e.g. Camry` : "Select Make first"}
-              className="w-full border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border disabled:bg-slate-50 disabled:text-slate-400"
+              className={`w-full rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border disabled:bg-slate-50 disabled:text-slate-400 ${vehicle.model ? 'border-green-400 bg-green-50/10' : 'border-slate-300'}`}
               autoComplete="off"
             />
             <datalist id="models-list">
@@ -227,7 +240,7 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
         <div className="mt-6 animate-fade-in">
            <button 
              onClick={scrollToTools}
-             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition shadow-md hover:shadow-lg transform active:scale-95"
+             className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition shadow-md hover:shadow-lg transform active:scale-[0.98]"
            >
              <Check className="h-5 w-5" />
              Confirm Vehicle & Start
