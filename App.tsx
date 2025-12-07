@@ -8,6 +8,11 @@ import Dashboard from './pages/Dashboard';
 import TireOil from './pages/TireOil';
 import Maintenance from './pages/Maintenance';
 import Report from './pages/Report';
+import SeoFuse from './pages/SeoFuse';
+import SeoTire from './pages/SeoTire';
+import SeoOil from './pages/SeoOil';
+import SeoLights from './pages/SeoLights';
+import SeoMaintenance from './pages/SeoMaintenance';
 import { Vehicle } from './types';
 
 const App: React.FC = () => {
@@ -38,12 +43,21 @@ const App: React.FC = () => {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home vehicle={vehicle} setVehicle={setVehicle} />} />
+            
+            {/* Main Tool Routes */}
             <Route path="/fuse" element={<Fuse vehicle={vehicle} />} />
             <Route path="/dashboard" element={<Dashboard vehicle={vehicle} />} />
             <Route path="/tire" element={<TireOil type="tire" vehicle={vehicle} />} />
             <Route path="/oil" element={<TireOil type="oil" vehicle={vehicle} />} />
             <Route path="/maintenance" element={<Maintenance vehicle={vehicle} />} />
             <Route path="/report" element={<Report vehicle={vehicle} />} />
+
+            {/* SEO Landing Page Routes */}
+            <Route path="/fuse/:slug" element={<SeoFuse />} />
+            <Route path="/tire/:slug" element={<SeoTire />} />
+            <Route path="/oil/:slug" element={<SeoOil />} />
+            <Route path="/lights/:slug" element={<SeoLights />} />
+            <Route path="/maintenance/:slug" element={<SeoMaintenance />} />
           </Routes>
         </main>
         <Footer />
