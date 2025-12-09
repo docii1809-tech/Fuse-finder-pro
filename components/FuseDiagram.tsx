@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Info } from 'lucide-react';
 
 interface Props {
   category: 'engine_bay' | 'driver_dash' | 'passenger_dash' | 'trunk' | 'unknown';
@@ -7,6 +7,19 @@ interface Props {
 
 const FuseDiagram: React.FC<Props> = ({ category }) => {
   const [selectedFuseId, setSelectedFuseId] = useState<string | null>(null);
+
+  // Configuration for zones
+  const getZoneCoords = () => {
+    switch (category) {
+      case 'engine_bay': return { cx: 100, cy: 52.5 };
+      case 'driver_dash': return { cx: 65, cy: 130 };
+      case 'passenger_dash': return { cx: 135, cy: 130 };
+      case 'trunk': return { cx: 100, cy: 270 };
+      default: return { cx: 100, cy: 150 };
+    }
+  };
+
+  const { cx: zoneX, cy: zoneY } = getZoneCoords();
 
   // Styles
   const activeClass = "fill-blue-500/10 stroke-blue-500 stroke-2";
@@ -51,6 +64,17 @@ const FuseDiagram: React.FC<Props> = ({ category }) => {
   ];
 
   const selectedFuse = fuseTypes.find(f => f.id === selectedFuseId);
+  const selectedIndex = fuseTypes.findIndex(f => f.id === selectedFuseId);
+  
+  // Calculate popup position based on selected fuse
+  // SVG viewBox is 200x300
+  // Offset logic matches renderFuses mapping: (i - 1) * 20
+  const popupOffset = (selectedIndex - 1) * 20;
+  const popupLeftPct = selectedFuse ? ((zoneX + popupOffset) / 200) * 100 : 50;
+  const popupTopPct = selectedFuse ? ((zoneY) / 300) * 100 : 50;
+
+  // Dynamic direction for popup (if at bottom, show above, else below)
+  const isBottom = zoneY > 200;
 
   const renderFuses = (cx: number, cy: number) => (
     <g className="animate-fade-in">
@@ -74,15 +98,19 @@ const FuseDiagram: React.FC<Props> = ({ category }) => {
            >
              {/* Selection Highlight Ring */}
              {isSelected && (
-                <rect 
-                    x={-fuse.w/2 - 3} y={-fuse.h/2 - 3} 
-                    width={fuse.w + 6} height={fuse.h + 6} 
-                    fill="white" 
-                    fillOpacity="0.9"
-                    stroke="#2563eb" 
-                    strokeWidth="1"
-                    rx="3"
-                />
+                <>
+                  <circle r="15" fill="white" fillOpacity="0.5" className="animate-ping" />
+                  <rect 
+                      x={-fuse.w/2 - 4} y={-fuse.h/2 - 4} 
+                      width={fuse.w + 8} height={fuse.h + 8} 
+                      fill="white" 
+                      fillOpacity="0.95"
+                      stroke="#2563eb" 
+                      strokeWidth="1.5"
+                      rx="4"
+                      className="drop-shadow-md"
+                  />
+                </>
              )}
 
              {/* Metal Prongs */}
@@ -130,65 +158,65 @@ const FuseDiagram: React.FC<Props> = ({ category }) => {
          className="relative w-full max-w-xs aspect-[2/3] md:aspect-square"
          onClick={() => setSelectedFuseId(null)}
         >
-          <svg viewBox="0 0 200 300" className="w-full h-full drop-shadow-xl" xmlns="http://www.w3.org/2000/svg">
-             {/* Car Body */}
+          <svg viewBox="0 0 200 300" className="w-full h-full drop-shadow-xl bg-slate-50 rounded-xl border border-slate-100" xmlns="http://www.w3.org/2000/svg">
+             {/* Car Body Outline - Abstract */}
              <path 
                 d="M40,60 C40,20 160,20 160,60 L170,100 L170,240 L160,280 C160,300 40,300 40,280 L30,240 L30,100 Z" 
-                className="fill-white stroke-slate-800 stroke-2"
+                className="fill-white stroke-slate-300 stroke-2"
              />
-             <path d="M45,80 L155,80 L150,110 L50,110 Z" className="fill-slate-100 stroke-slate-300" />
-             <path d="M50,230 L150,230 L155,250 L45,250 Z" className="fill-slate-100 stroke-slate-300" />
+             {/* Windshield */}
+             <path d="M45,80 L155,80 L150,110 L50,110 Z" className="fill-slate-100 stroke-slate-200" />
+             {/* Rear Window */}
+             <path d="M50,230 L150,230 L155,250 L45,250 Z" className="fill-slate-100 stroke-slate-200" />
 
              {/* ZONES */}
-             <rect x="50" y="30" width="100" height="45" rx="5" className={isEngine ? activeClass : inactiveClass} />
-             <rect x="40" y="115" width="50" height="30" rx="5" className={isDriver ? activeClass : inactiveClass} />
-             <rect x="110" y="115" width="50" height="30" rx="5" className={isPass ? activeClass : inactiveClass} />
-             <rect x="50" y="255" width="100" height="30" rx="5" className={isTrunk ? activeClass : inactiveClass} />
+             <rect x="50" y="30" width="100" height="45" rx="5" className={`${isEngine ? activeClass : inactiveClass} transition-colors duration-500`} />
+             <rect x="40" y="115" width="50" height="30" rx="5" className={`${isDriver ? activeClass : inactiveClass} transition-colors duration-500`} />
+             <rect x="110" y="115" width="50" height="30" rx="5" className={`${isPass ? activeClass : inactiveClass} transition-colors duration-500`} />
+             <rect x="50" y="255" width="100" height="30" rx="5" className={`${isTrunk ? activeClass : inactiveClass} transition-colors duration-500`} />
              
              {/* LABELS */}
-             <text x="100" y="25" fontSize="8" textAnchor="middle" fill="#64748b" fontWeight="bold">FRONT</text>
+             <text x="100" y="25" fontSize="8" textAnchor="middle" fill="#94a3b8" fontWeight="bold">FRONT</text>
              
-             {/* INTERACTIVE FUSE ICONS */}
-             {isEngine && renderFuses(100, 52.5)}
-             {isDriver && renderFuses(65, 130)}
-             {isPass && renderFuses(135, 130)}
-             {isTrunk && renderFuses(100, 270)}
+             {/* INTERACTIVE FUSE ICONS - Rendered only in the active zone */}
+             {category !== 'unknown' && renderFuses(zoneX, zoneY)}
           </svg>
 
-          {/* Details Popup Overlay */}
+          {/* Details Popup Overlay - Positioned near the fuse */}
           {selectedFuse && (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur shadow-2xl border-2 border-blue-100 rounded-xl p-5 w-60 text-center animate-fade-in z-20">
-                <button 
+            <div 
+              className="absolute z-20 w-48"
+              style={{ 
+                left: `${popupLeftPct}%`, 
+                top: `${popupTopPct}%`,
+                transform: `translate(-50%, ${isBottom ? '-110%' : '20px'})` // Flip if near bottom
+              }}
+            >
+              <div className="bg-white/95 backdrop-blur shadow-xl border-2 border-blue-500 rounded-xl p-3 text-center animate-fade-in relative">
+                 {/* Little Triangle Pointer */}
+                 <div 
+                   className={`absolute left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-blue-500 rotate-45 ${isBottom ? '-bottom-1.5 border-b-2 border-r-2 border-t-0 border-l-0' : '-top-1.5 border-t-2 border-l-2 border-b-0 border-r-0'}`}
+                 ></div>
+
+                 <button 
                   onClick={(e) => { e.stopPropagation(); setSelectedFuseId(null); }}
-                  className="absolute top-2 right-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 p-1 transition"
+                  className="absolute top-1 right-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 p-0.5 transition"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3 w-3" />
                 </button>
-                <div className="flex justify-center mb-3">
-                   <div className="w-12 h-12 rounded-full flex items-center justify-center border border-slate-100 shadow-sm bg-slate-50">
-                      <div className="w-4 h-5 rounded-[1px] relative shadow-sm flex items-center justify-center" style={{ backgroundColor: selectedFuse.color }}>
-                         <span className="text-[8px] font-bold text-white leading-none">{selectedFuse.amp}</span>
-                      </div>
-                   </div>
+
+                <h4 className="text-slate-900 font-bold text-sm mb-0.5 flex items-center justify-center gap-1">
+                  {selectedFuse.label}
+                </h4>
+                <div className="text-[10px] bg-slate-100 text-slate-500 rounded px-1.5 py-0.5 inline-block mb-2 font-mono">
+                  {selectedFuse.era}
                 </div>
-                <h4 className="text-slate-900 font-bold mb-1 text-base">{selectedFuse.label}</h4>
-                <p className="text-sm text-slate-600 mb-3 leading-snug">{selectedFuse.desc}</p>
-                
-                <div className="bg-slate-100 rounded-lg px-3 py-2 inline-flex flex-col items-center border border-slate-200">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Typical Era</span>
-                    <span className="text-xs font-bold text-slate-800">{selectedFuse.era}</span>
-                </div>
-                
-                <div className="mt-4 text-[10px] text-blue-500 font-bold uppercase tracking-wider cursor-pointer hover:text-blue-700 transition-colors" onClick={() => setSelectedFuseId(null)}>
-                    Tap to Close
-                </div>
+                <p className="text-xs text-slate-600 leading-snug mb-0">
+                  {selectedFuse.desc}
+                </p>
+              </div>
             </div>
           )}
-          
-          <div className="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-1 rounded border border-slate-200 text-[10px] font-bold shadow-sm text-slate-600 uppercase flex items-center gap-2">
-             <span className={`w-2 h-2 rounded-full ${category === 'unknown' ? 'bg-slate-300' : 'bg-blue-500 animate-pulse'}`}></span>
-             {category === 'unknown' ? 'Locating...' : category.replace('_', ' ')}
-          </div>
        </div>
     </div>
   );

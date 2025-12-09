@@ -75,7 +75,7 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
         return;
       }
       
-      if (year && make && model) {
+      if (year && make) {
         // Normalize Make: Find matching make in our list to keep casing consistent (e.g. "TOYOTA" -> "Toyota")
         // If not in our list, convert to Title Case
         const normalizedMake = MAKES.find(m => m.toLowerCase() === make.toLowerCase()) || 
@@ -84,7 +84,7 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
         setVehicle({
           year,
           make: normalizedMake,
-          model
+          model: model || ''
         });
       } else {
         setError("Incomplete vehicle data received from VIN decoder. Please select manually.");
@@ -94,6 +94,12 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
       setError("Unable to connect to vehicle database. Please ensure you are online.");
     } finally {
       setIsDecoding(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && vin.length === 17) {
+      decodeVin();
     }
   };
 
@@ -144,6 +150,7 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
                       setVin(e.target.value.toUpperCase());
                       setError(null);
                     }}
+                    onKeyDown={handleKeyDown}
                     placeholder="Enter 17-character VIN"
                     maxLength={17}
                     className={`w-full rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2.5 pl-3 border font-mono uppercase text-sm tracking-wide ${error ? 'border-red-300 bg-red-50' : 'border-slate-300'}`}
