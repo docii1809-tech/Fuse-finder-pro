@@ -1,0 +1,10 @@
+{
+  "name": "Fuse Finder Pro",
+  "short_name": "FuseFinder",
+  "start_url": "/Fuse-finder-pro/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e40af",
+  "description": "Instant vehicle fuse box lookup.",
+  "icons": []
+}
