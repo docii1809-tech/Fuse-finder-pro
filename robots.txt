@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://docii1809-tech.github.io/Fuse-finder-pro/sitemap.xml
