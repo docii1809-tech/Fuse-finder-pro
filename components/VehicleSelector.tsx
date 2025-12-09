@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { YEARS, MAKES, POPULAR_MODELS } from '../constants';
 import { Vehicle } from '../types';
-import { Check, Trash2, Loader2, Search, AlertCircle, CheckCircle } from 'lucide-react';
+import { Check, Trash2, Loader2, Search, AlertCircle, CheckCircle, Car } from 'lucide-react';
 
 interface Props {
   vehicle: Vehicle;
@@ -14,6 +14,13 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
   const [isDecoding, setIsDecoding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Effect to clear error when vehicle is complete manually
+  useEffect(() => {
+    if (vehicle.year && vehicle.make && vehicle.model) {
+      setError(null);
+    }
+  }, [vehicle]);
+
   const handleChange = (field: keyof Vehicle, value: string) => {
     const newVehicle = { ...vehicle, [field]: value };
     
@@ -23,7 +30,6 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
     }
     
     setVehicle(newVehicle);
-    setError(null);
   };
 
   const handleReset = () => {
@@ -40,6 +46,7 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
   };
 
   const decodeVin = async () => {
+    // Basic validation
     if (vin.length !== 17) {
       setError("VIN must be exactly 17 characters.");
       return;
@@ -62,13 +69,14 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
         throw new Error('Invalid response data');
       }
 
+      // Helper to extract variable values
       const getValue = (name: string) => results.find((r: any) => r.Variable === name)?.Value;
       
       const year = getValue("Model Year");
       const make = getValue("Make");
       const model = getValue("Model");
       
-      // Check if the decoder actually found a vehicle
+      // Check if the decoder actually found a vehicle (sometimes it returns success but empty values for partial matches)
       if (!year && !make) {
         setError("Could not identify vehicle. Please verify the VIN and try again.");
         setIsDecoding(false);
@@ -86,6 +94,9 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
           make: normalizedMake,
           model: model || ''
         });
+        
+        // Clear any previous VIN errors
+        setError(null);
       } else {
         setError("Incomplete vehicle data received from VIN decoder. Please select manually.");
       }
@@ -95,6 +106,13 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
     } finally {
       setIsDecoding(false);
     }
+  };
+
+  const handleVinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Allow only alphanumeric characters and uppercase them
+    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    setVin(val);
+    if (error) setError(null);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -113,13 +131,15 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
         : 'shadow-md border border-slate-200'
     } ${className}`}>
       
-      {isComplete && <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>}
+      {/* Active Indicator Stripe */}
+      {isComplete && <div className="absolute top-0 left-0 w-1 h-full bg-green-500 animate-fade-in"></div>}
 
       <div className="flex justify-between items-center mb-6 pl-2">
         <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+          <Car className={`h-6 w-6 ${isComplete ? 'text-green-600' : 'text-slate-400'}`} />
           <span>Select Your Vehicle</span>
           {isComplete && (
-             <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs animate-fade-in border border-green-200">
+             <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs animate-fade-in border border-green-200 ml-2">
                <CheckCircle className="h-3 w-3" />
                <span className="font-bold">Active</span>
              </div>
@@ -146,20 +166,20 @@ const VehicleSelector: React.FC<Props> = ({ vehicle, setVehicle, className }) =>
                 <input 
                     type="text" 
                     value={vin}
-                    onChange={(e) => {
-                      setVin(e.target.value.toUpperCase());
-                      setError(null);
-                    }}
+                    onChange={handleVinChange}
                     onKeyDown={handleKeyDown}
                     placeholder="Enter 17-character VIN"
                     maxLength={17}
                     className={`w-full rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2.5 pl-3 border font-mono uppercase text-sm tracking-wide ${error ? 'border-red-300 bg-red-50' : 'border-slate-300'}`}
                 />
+                <div className="absolute right-2 top-2.5 text-xs text-slate-400 font-mono">
+                    {vin.length}/17
+                </div>
             </div>
             <button 
                 onClick={decodeVin}
                 disabled={isDecoding || vin.length < 17}
-                className="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition flex items-center gap-2 shadow-sm"
+                className="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition flex items-center gap-2 shadow-sm whitespace-nowrap"
             >
                 {isDecoding ? <Loader2 className="animate-spin h-4 w-4" /> : <Search className="h-4 w-4" />}
                 <span className="hidden sm:inline">Decode</span>
