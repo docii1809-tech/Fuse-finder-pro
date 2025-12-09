@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import TireOil from './pages/TireOil';
 import Maintenance from './pages/Maintenance';
 import Report from './pages/Report';
+import Success from './pages/Success';
 import SeoFuse from './pages/SeoFuse';
 import SeoTire from './pages/SeoTire';
 import SeoOil from './pages/SeoOil';
@@ -51,6 +52,7 @@ const App: React.FC = () => {
             <Route path="/oil" element={<TireOil type="oil" vehicle={vehicle} />} />
             <Route path="/maintenance" element={<Maintenance vehicle={vehicle} />} />
             <Route path="/report" element={<Report vehicle={vehicle} />} />
+            <Route path="/success" element={<Success />} />
 
             {/* SEO Landing Page Routes */}
             <Route path="/fuse/:slug" element={<SeoFuse />} />

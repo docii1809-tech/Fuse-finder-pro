@@ -21,27 +21,30 @@ const FuseDiagram: React.FC<Props> = ({ category }) => {
     { 
       id: 'mini', 
       label: 'Mini (ATM)', 
-      color: '#ef4444', 
-      w: 8, 
-      h: 10, 
+      color: '#ef4444', // Red
+      amp: '10',
+      w: 10, 
+      h: 12, 
       desc: 'Compact blade style found in most cars.',
       era: '1990s – Present' 
     },
     { 
       id: 'standard', 
       label: 'Standard (ATO)', 
-      color: '#eab308', 
-      w: 10, 
-      h: 12, 
+      color: '#eab308', // Yellow
+      amp: '20',
+      w: 12, 
+      h: 14, 
       desc: 'The universal standard blade fuse.',
       era: '1976 – 2010s' 
     },
     { 
       id: 'micro', 
       label: 'Micro (2/3)', 
-      color: '#3b82f6', 
-      w: 6, 
-      h: 8, 
+      color: '#3b82f6', // Blue
+      amp: '15',
+      w: 8, 
+      h: 10, 
       desc: 'Ultra-compact for high-density boxes.',
       era: '2010s – Present' 
     },
@@ -52,10 +55,10 @@ const FuseDiagram: React.FC<Props> = ({ category }) => {
   const renderFuses = (cx: number, cy: number) => (
     <g className="animate-fade-in">
        {/* Background Zone Circle */}
-       <circle cx={cx} cy={cy} r="32" className="fill-blue-500/5 animate-pulse origin-center" />
+       <circle cx={cx} cy={cy} r="35" className="fill-blue-500/5 animate-pulse origin-center" />
        
        {fuseTypes.map((fuse, i) => {
-         const offset = (i - 1) * 18;
+         const offset = (i - 1) * 20;
          const isSelected = selectedFuseId === fuse.id;
 
          return (
@@ -72,35 +75,50 @@ const FuseDiagram: React.FC<Props> = ({ category }) => {
              {/* Selection Highlight Ring */}
              {isSelected && (
                 <rect 
-                    x={-fuse.w/2 - 4} y={-fuse.h/2 - 4} 
-                    width={fuse.w + 8} height={fuse.h + 8} 
+                    x={-fuse.w/2 - 3} y={-fuse.h/2 - 3} 
+                    width={fuse.w + 6} height={fuse.h + 6} 
                     fill="white" 
                     fillOpacity="0.9"
                     stroke="#2563eb" 
-                    strokeWidth="1.5"
+                    strokeWidth="1"
                     rx="3"
                 />
              )}
+
+             {/* Metal Prongs */}
+             <line x1={-fuse.w/3} y1={-fuse.h/2} x2={-fuse.w/3} y2={-fuse.h/2 - 4} stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+             <line x1={fuse.w/3} y1={-fuse.h/2} x2={fuse.w/3} y2={-fuse.h/2 - 4} stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
 
              {/* Fuse Body */}
              <rect 
                x={-fuse.w/2} y={-fuse.h/2} 
                width={fuse.w} height={fuse.h} 
                fill={fuse.color} 
-               rx="1.5" 
-               stroke={isSelected ? "#1e293b" : "white"}
-               strokeWidth={isSelected ? "1" : "0.5"} 
+               rx="2" 
+               stroke={isSelected ? "#1e293b" : "rgba(255,255,255,0.5)"}
+               strokeWidth="0.5" 
              />
-             {/* Metal Prongs */}
-             <line x1={-fuse.w/3} y1={-fuse.h/2} x2={-fuse.w/3} y2={-fuse.h/2 - 3} stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
-             <line x1={fuse.w/3} y1={-fuse.h/2} x2={fuse.w/3} y2={-fuse.h/2 - 3} stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+
+             {/* Amperage Text */}
+             <text 
+                x="0" 
+                y="1" 
+                fontSize="4.5" 
+                fontWeight="bold" 
+                fill="white" 
+                textAnchor="middle" 
+                dominantBaseline="middle"
+                style={{ textShadow: '0px 1px 1px rgba(0,0,0,0.3)' }}
+             >
+                {fuse.amp}
+             </text>
            </g>
          );
        })}
        
        {!selectedFuseId && (
-           <text x={cx} y={cy + 25} fontSize="6" textAnchor="middle" fill="#3b82f6" fontWeight="bold" className="pointer-events-none uppercase tracking-tighter opacity-80">
-             Inspect Types
+           <text x={cx} y={cy + 35} fontSize="6" textAnchor="middle" fill="#3b82f6" fontWeight="bold" className="pointer-events-none uppercase tracking-tighter opacity-80 animate-bounce">
+             Tap Fuse to ID
            </text>
        )}
     </g>
@@ -148,9 +166,8 @@ const FuseDiagram: React.FC<Props> = ({ category }) => {
                 </button>
                 <div className="flex justify-center mb-3">
                    <div className="w-12 h-12 rounded-full flex items-center justify-center border border-slate-100 shadow-sm bg-slate-50">
-                      <div className="w-4 h-5 rounded-[1px] relative shadow-sm" style={{ backgroundColor: selectedFuse.color }}>
-                         <div className="absolute -top-1 left-0.5 w-1 h-1.5 bg-slate-400 rounded-sm"></div>
-                         <div className="absolute -top-1 right-0.5 w-1 h-1.5 bg-slate-400 rounded-sm"></div>
+                      <div className="w-4 h-5 rounded-[1px] relative shadow-sm flex items-center justify-center" style={{ backgroundColor: selectedFuse.color }}>
+                         <span className="text-[8px] font-bold text-white leading-none">{selectedFuse.amp}</span>
                       </div>
                    </div>
                 </div>

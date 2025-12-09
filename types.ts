@@ -34,6 +34,7 @@ export interface AnalysisResult {
   description: string;
   recommendation: string;
   confidence: number;
+  filterSuggestion?: string;
 }
 
 export enum AnalysisType {

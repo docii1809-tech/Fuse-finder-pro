@@ -68,11 +68,11 @@ const Dashboard: React.FC<Props> = ({ vehicle }) => {
         </div>
       </div>
 
-      {/* Vehicle Context & Dashboard Reference */}
+      {/* Vehicle Context */}
       {vehicle.make && (
-        <div className="mb-10 grid md:grid-cols-2 gap-6 animate-fade-in">
+        <div className="mb-10 animate-fade-in flex justify-center">
              {/* Exterior Profile */}
-             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center gap-5 transition hover:shadow-md">
+             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center gap-5 transition hover:shadow-md w-full max-w-xl">
                 <div className="w-28 h-24 flex-shrink-0 bg-slate-100 rounded-xl overflow-hidden relative shadow-inner">
                     {carImage ? (
                         <img src={carImage.url} alt={vehicle.model} className="w-full h-full object-cover" />
@@ -86,25 +86,6 @@ const Dashboard: React.FC<Props> = ({ vehicle }) => {
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Vehicle Profile</p>
                     <h3 className="text-xl font-bold text-slate-900 leading-tight">{vehicle.year} {vehicle.make}</h3>
                     <p className="text-slate-600 font-medium">{vehicle.model}</p>
-                </div>
-             </div>
-
-             {/* Dashboard Reference */}
-             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center gap-5 transition hover:shadow-md">
-                <div className="w-28 h-24 flex-shrink-0 bg-slate-900 rounded-xl overflow-hidden relative shadow-inner group">
-                    <img 
-                        src="https://images.unsplash.com/photo-1580273916550-e323be2ed532?auto=format&fit=crop&q=80&w=500" 
-                        alt="Dashboard Layout Reference" 
-                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500"
-                    />
-                    <div className="absolute inset-0 bg-blue-900/10 group-hover:bg-transparent transition"></div>
-                </div>
-                <div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Dashboard Context</p>
-                    <h3 className="text-xl font-bold text-slate-900 leading-tight flex items-center gap-2">
-                        Interior View
-                    </h3>
-                    <p className="text-slate-500 text-sm mt-1">Reference layout for {vehicle.make} series</p>
                 </div>
              </div>
         </div>

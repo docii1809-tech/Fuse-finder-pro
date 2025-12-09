@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Droplets, Disc, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Droplets, Disc, AlertTriangle, CheckCircle, XCircle, Wrench } from 'lucide-react';
 import FileUploader from '../components/FileUploader';
 import ResultPanel from '../components/ResultPanel';
 import AffiliateBox from '../components/AffiliateBox';
@@ -39,6 +39,18 @@ const TireOil: React.FC<Props> = ({ type, vehicle }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getProductQuery = () => {
+    if (isTire) {
+      return `Tires for ${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+    }
+    // For oil, include the filter suggestion if available
+    const base = `5W-30 Oil and Filter for ${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+    if (result?.filterSuggestion) {
+      return `${result.filterSuggestion} Oil Filter ${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+    }
+    return base;
   };
 
   return (
@@ -114,8 +126,23 @@ const TireOil: React.FC<Props> = ({ type, vehicle }) => {
 
       <ResultPanel result={result} />
 
+      {/* Suggested Parts Display */}
+      {result?.filterSuggestion && !isTire && (
+        <div className="mt-6 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-4 animate-fade-in">
+           <div className="bg-white p-2 rounded-full shadow-sm text-blue-600 border border-blue-50">
+              <Wrench className="h-5 w-5" />
+           </div>
+           <div>
+              <h4 className="font-bold text-slate-900 text-sm">Recommended Oil Filter</h4>
+              <p className="text-slate-600 text-sm mt-1">
+                Based on your {vehicle.make} {vehicle.model}, we recommend: <strong className="text-blue-700">{result.filterSuggestion}</strong>
+              </p>
+           </div>
+        </div>
+      )}
+
       {result && (
-        <AffiliateBox productName={isTire ? "New Tires" : "Synthetic Motor Oil 5W-30"} />
+        <AffiliateBox productName={getProductQuery()} />
       )}
     </div>
   );

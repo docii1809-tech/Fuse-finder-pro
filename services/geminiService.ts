@@ -19,7 +19,7 @@ export const analyzeImage = async (
       prompt = `Analyze this tire image for wear, damage, or dry rot. Estimate remaining tread life percentage. Vehicle context: ${vehicleContext || 'Unknown'}. Return JSON with: title, severity (low/medium/high/critical), description, recommendation, confidence (0-1).`;
       break;
     case AnalysisType.OIL:
-      prompt = `Analyze this engine oil dipstick or cap image. Check for color (honey vs black vs milky), sludge, or metal particles. Vehicle context: ${vehicleContext || 'Unknown'}. Return JSON with: title, severity (low/medium/high/critical), description, recommendation, confidence (0-1).`;
+      prompt = `Analyze this engine oil dipstick or cap image. Check for color (honey vs black vs milky), sludge, or metal particles. Vehicle context: ${vehicleContext || 'Unknown'}. Return JSON with: title, severity (low/medium/high/critical), description, recommendation, filterSuggestion (string: suggest specific oil filter part number or type compatible with this vehicle, e.g. "Fram PH6607" or "Bosch 3323"), confidence (0-1).`;
       break;
     case AnalysisType.DASHBOARD:
       prompt = `Identify the dashboard warning light(s) in this image. Explain what it means for a ${vehicleContext || 'car'}. Return JSON with: title, severity (low/medium/high/critical), description, recommendation, confidence (0-1).`;
@@ -109,6 +109,7 @@ const mockAnalysis = (type: AnalysisType): AnalysisResult => ({
   severity: "medium",
   description: "AI API Key not configured. This is a simulated result based on your input.",
   recommendation: "Please configure your API key to get real-time analysis from Gemini.",
+  filterSuggestion: type === AnalysisType.OIL ? "Fram PH7317 or equivalent" : undefined,
   confidence: 0.95
 });
 

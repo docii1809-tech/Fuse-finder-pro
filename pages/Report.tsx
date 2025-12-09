@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
-import { FileText, Download, Lock, Check, CreditCard, Loader2, ShieldCheck, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { FileText, Download, Check, ShieldCheck, Lock, Zap, CreditCard } from 'lucide-react';
 import { Vehicle } from '../types';
 
 interface Props {
@@ -8,20 +9,13 @@ interface Props {
 }
 
 const Report: React.FC<Props> = ({ vehicle }) => {
-  const [hasPaid, setHasPaid] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [showPayment, setShowPayment] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
 
-  // Mock payment processing
-  const handlePayment = () => {
-    setIsProcessing(true);
-    // Simulate API latency
-    setTimeout(() => {
-      setIsProcessing(false);
-      setHasPaid(true);
-      setShowPayment(false);
-    }, 2000);
-  };
+  useEffect(() => {
+    // Check if user has purchased premium
+    const unlocked = localStorage.getItem('fuse_premium_unlocked') === 'true';
+    setIsUnlocked(unlocked);
+  }, []);
 
   const generatePDF = () => {
     const doc = new jsPDF();
@@ -114,141 +108,61 @@ const Report: React.FC<Props> = ({ vehicle }) => {
            </div>
         </div>
 
-        {/* Payment / Action Column */}
-        <div className="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 relative overflow-hidden flex flex-col justify-center">
-           {!hasPaid ? (
-             <div className="text-center">
-                <div className="bg-blue-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-blue-50/50">
-                   <Lock className="h-10 w-10 text-blue-600" />
+        {/* Action Column */}
+        <div className={`bg-white p-8 rounded-2xl shadow-lg border ${isUnlocked ? 'border-green-100' : 'border-blue-100'} relative overflow-hidden flex flex-col justify-center`}>
+             
+             {isUnlocked ? (
+                // Unlocked View
+                <div className="text-center animate-fade-in h-full flex flex-col justify-center">
+                    <div className="bg-green-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-100">
+                       <Check className="h-10 w-10 text-green-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Report Ready</h3>
+                    <p className="text-slate-600 mb-8 text-sm">
+                      Your premium vehicle analysis is ready for download.
+                    </p>
+                    
+                    <button 
+                      onClick={generatePDF}
+                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2 group"
+                    >
+                      <Download className="h-5 w-5 group-hover:scale-110 transition" />
+                      Download PDF
+                    </button>
+                    
+                    <p className="mt-6 text-[10px] text-slate-400 flex items-center justify-center gap-1">
+                       <ShieldCheck className="h-3 w-3" /> Securely generated on your device
+                    </p>
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-3">Unlock Premium Report</h3>
-                <p className="text-slate-600 mb-8 text-sm leading-relaxed px-4">
-                  Get a professional-grade PDF report of your vehicle's status to share with your mechanic or keep for your records.
-                </p>
-                
-                <div className="mb-8 flex justify-center items-baseline gap-1">
-                  <span className="text-5xl font-extrabold text-slate-900">$1</span>
-                  <span className="text-slate-500 font-medium">.00</span>
+             ) : (
+                // Locked View (Premium Gate)
+                <div className="text-center animate-fade-in relative z-10 h-full flex flex-col justify-center">
+                    <div className="bg-blue-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-100">
+                       <Lock className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Unlock Premium Report</h3>
+                    <p className="text-slate-600 mb-6 text-sm">
+                      Get the detailed AI diagnostics, full fuse diagrams, and personalized maintenance steps.
+                    </p>
+                    <div className="text-3xl font-extrabold text-slate-900 mb-6">
+                        $4.99 <span className="text-sm font-normal text-slate-500">/ one-time</span>
+                    </div>
+                    
+                    {/* Mock Stripe Link -> Goes to Success Page for Demo */}
+                    <Link 
+                      to="/success"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2 group mb-4"
+                    >
+                      <CreditCard className="h-5 w-5" />
+                      Unlock Now
+                    </Link>
+                    <p className="text-xs text-slate-400 flex items-center justify-center gap-1">
+                      <ShieldCheck className="h-3 w-3" /> Secure Payment via Stripe
+                    </p>
                 </div>
-
-                <button 
-                  onClick={() => setShowPayment(true)}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2 group"
-                >
-                  Upgrade & Download
-                  <Lock className="h-4 w-4 opacity-80 group-hover:hidden" />
-                  <Check className="h-4 w-4 hidden group-hover:block" />
-                </button>
-                <p className="mt-4 text-[11px] text-slate-400 flex items-center justify-center gap-1">
-                  <ShieldCheck className="h-3 w-3" /> Secure Payment via Stripe (Mock)
-                </p>
-             </div>
-           ) : (
-             <div className="text-center animate-fade-in h-full flex flex-col justify-center">
-                <div className="bg-green-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-100">
-                   <Check className="h-10 w-10 text-green-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">Payment Successful!</h3>
-                <p className="text-slate-600 mb-8 text-sm">
-                  Your report is ready. Thank you for your purchase.
-                </p>
-                
-                <button 
-                  onClick={generatePDF}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2"
-                >
-                  <Download className="h-5 w-5" />
-                  Download PDF Now
-                </button>
-             </div>
-           )}
+             )}
         </div>
       </div>
-
-      {/* Mock Payment Modal */}
-      {showPayment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
-            <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-               <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                 <ShieldCheck className="h-5 w-5 text-green-600" /> Secure Checkout
-               </h3>
-               <button onClick={() => setShowPayment(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-200 transition">
-                 <X className="h-5 w-5" />
-               </button>
-            </div>
-            
-            <div className="p-6 space-y-5">
-              <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl border border-blue-100">
-                 <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                       <FileText className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div className="text-left">
-                       <p className="font-bold text-sm text-slate-900">Premium Report</p>
-                       <p className="text-[11px] text-slate-500 uppercase tracking-wide">{vehicle.make} {vehicle.model}</p>
-                    </div>
-                 </div>
-                 <span className="font-bold text-slate-900 text-lg">$1.00</span>
-              </div>
-
-              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handlePayment(); }}>
-                 <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Card Number</label>
-                    <div className="relative group">
-                       <input 
-                         type="text" 
-                         value="4242 4242 4242 4242" 
-                         readOnly
-                         className="w-full border-slate-300 rounded-lg pl-10 py-3 text-sm font-mono text-slate-600 bg-slate-50 focus:ring-0 cursor-not-allowed opacity-70" 
-                       />
-                       <CreditCard className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-                    </div>
-                 </div>
-                 <div className="grid grid-cols-2 gap-4">
-                    <div>
-                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Expiry</label>
-                       <input 
-                         type="text" 
-                         value="12 / 28" 
-                         readOnly 
-                         className="w-full border-slate-300 rounded-lg py-3 text-sm px-3 font-mono text-slate-600 bg-slate-50 focus:ring-0 cursor-not-allowed opacity-70" 
-                        />
-                    </div>
-                    <div>
-                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">CVC</label>
-                       <input 
-                         type="text" 
-                         value="123" 
-                         readOnly 
-                         className="w-full border-slate-300 rounded-lg py-3 text-sm px-3 font-mono text-slate-600 bg-slate-50 focus:ring-0 cursor-not-allowed opacity-70" 
-                        />
-                    </div>
-                 </div>
-                 
-                 <div className="pt-2">
-                    <button 
-                      type="submit" 
-                      disabled={isProcessing}
-                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition disabled:bg-slate-400 disabled:cursor-wait shadow-lg active:scale-[0.98]"
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="h-5 w-5 animate-spin" /> Processing Payment...
-                        </>
-                      ) : (
-                        `Pay $1.00 & Unlock`
-                      )}
-                    </button>
-                    <p className="text-center text-[10px] text-slate-400 mt-3 flex justify-center items-center gap-1">
-                       <ShieldCheck className="h-3 w-3" /> Payments processed securely. This is a demo.
-                    </p>
-                 </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
