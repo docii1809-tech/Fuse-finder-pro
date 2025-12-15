@@ -21,12 +21,3 @@ export default defineConfig(({ mode }) => {
       }
     };
 });
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-// IMPORTANT:
-// Change "Fuse-finder-pro" to the EXACT name of your repo.
-export default defineConfig({
-  plugins: [react()],
-  base: '/Fuse-finder-pro/',
-})

@@ -3,91 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fuse Finder Pro - Vehicle Health Tools</title>
-
-    <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Tailwind CSS -->
+    <title>Fuse Finder Pro - Automotive Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Primary SEO -->
-    <meta name="description" content="Instant vehicle fuse box lookup by year, make, and model. Free Fuse Finder tool for quick fuse diagram access.">
-    <meta name="keywords" content="fuse finder, fuse box diagram, automotive fuse, vehicle tools, car maintenance">
-    <meta name="author" content="Fuse Finder Pro">
-
-    <!-- Open Graph (Social Sharing) -->
-    <meta property="og:title" content="Fuse Finder Pro">
-    <meta property="og:description" content="Search fuse box diagrams instantly by year/make/model. Free tool.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://docii1809-tech.github.io/Fuse-finder-pro/">
-    <meta property="og:image" content="https://docii1809-tech.github.io/Fuse-finder-pro/og-image.png">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Fuse Finder Pro">
-    <meta name="twitter:description" content="Search fuse box diagrams instantly by year/make/model. Free tool.">
-    <meta name="twitter:image" content="https://docii1809-tech.github.io/Fuse-finder-pro/og-image.png">
-
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://docii1809-tech.github.io/Fuse-finder-pro/" />
-
-    <!-- Manifest for PWA -->
-    <link rel="manifest" href="/Fuse-finder-pro/manifest.json" />
-
-    <!-- Google AdSense (replace YOUR-ADSENSE-ID) -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR-ADSENSE-ID"
-        crossorigin="anonymous"></script>
-
-    <!-- Custom Scrollbar & Body Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: 'Inter', sans-serif;
-        scroll-behavior: smooth;
-        background-color: #f8fafc;
-        color: #1f2937;
+      body { font-family: 'Inter', sans-serif; }
+      /* Custom scrollbar for better aesthetics */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #f1f1f1; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
       }
-      ::-webkit-scrollbar {
-        width: 8px;
+      .animate-fade-in {
+        animation: fadeIn 0.4s ease-out forwards;
       }
-      ::-webkit-scrollbar-track {
-        background: #f1f5f9;
+      
+      /* Skeleton Loading Shimmer */
+      .skeleton {
+        background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 0.5rem;
       }
-      ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+      @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
       }
     </style>
-
-    <!-- ImportMap for React + AI Studio -->
-    <script type="importmap">
-    {
-      "imports": {
-        "react/": "https://aistudiocdn.com/react@^19.2.1/",
-        "react": "https://aistudiocdn.com/react@^19.2.1",
-        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.31.0",
-        "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0"
-      }
-    }
-    </script>
-  </head>
-
-  <body class="antialiased">
+  <script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.31.0",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.10.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "jspdf": "https://aistudiocdn.com/jspdf@^3.0.4"
+  }
+}
+</script>
+</head>
+  <body class="bg-slate-50 text-slate-900 antialiased">
     <div id="root"></div>
-
-    <!-- Example AdSense Slot (replace IDs) -->
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="YOUR-ADSENSE-ID"
-         data-ad-slot="1234567890"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
